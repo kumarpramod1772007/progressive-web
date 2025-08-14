@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0d6efd" />
+<meta name="description" content="PWA Shop — Full-featured progressive web app with offline support and push notifications." />
+<title>PWA Shop — Full Features</title>
+
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png" />
+<link rel="apple-touch-icon" href="/icons/icon-512.png" />
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body { opacity:0; transition: opacity 0.3s ease-in; background:#f8f9fa; font-family:Arial,sans-serif; }
+.offline { background:#ffc107; color:#212529; text-align:center; padding:0.5rem; position:fixed; top:0; width:100%; display:none; z-index:999; }
+.product-card { background:#fff; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.1); overflow:hidden; transition: transform 0.2s, box-shadow 0.2s; display:flex; flex-direction:column; cursor:pointer; }
+.product-card:hover { transform:translateY(-5px); box-shadow:0 6px 15px rgba(0,0,0,0.15); }
+.product-image { width:100%; height:200px; object-fit:cover; }
+.product-info { padding:1rem; flex:1; display:flex; flex-direction:column; justify-content:space-between; }
+.product-title { font-weight:bold; margin-bottom:0.5rem; font-size:1.1rem; }
+.product-price { color:#0d6efd; font-weight:bold; margin-bottom:0.5rem; }
+.add-to-cart { background-color:#0d6efd; color:white; padding:0.5rem; border-radius:6px; text-align:center; cursor:pointer; transition:background 0.2s; }
+.add-to-cart:hover { background-color:#0b5ed7; }
+#products { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; margin:1rem; }
+.modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center; }
+.modal { background:#fff; border-radius:12px; max-width:500px; width:90%; padding:1rem; position:relative; }
+.modal-close { position:absolute; top:0.5rem; right:0.5rem; cursor:pointer; font-size:1.2rem; font-weight:bold; }
+.cart-counter { position:absolute; top:-10px; right:-10px; background:red; color:white; font-size:0.8rem; font-weight:bold; padding:0 6px; border-radius:50%; }
+</style>
+</head>
+<body>
+<header class="site-header p-4 bg-white shadow-md flex justify-between items-center sticky top-0 z-50">
+  <h1 class="text-2xl font-bold text-blue-600">PWA Shop</h1>
+  <div class="relative flex gap-2">
+    <button id="btn-enable-push" type="button" hidden class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Enable Push</button>
+    <button id="btn-cart" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 relative">Cart<span id="cart-count" class="cart-counter">0</span></button>
+  </div>
+</header>
+
+<div id="offline-banner" class="offline" role="alert">You are offline — showing cached content.</div>
+
+<main id="app" class="mt-4">
+  <section class="products" id="products" aria-label="Product list">
+    <!-- Static products displayed immediately -->
+    <div class="product-card">
+      <img src="C:/Users/pramod/Downloads/pexels-beytlik-10793922.jpg" alt="Product 1" class="product-image"/>
+      <div class="product-info">
+        <div>
+          <h3 class="product-title">Product 1</h3>
+          <p class="product-price">$25</p>
+        </div>
+        <button class="add-to-cart">Add to Cart</button>
+      </div>
+    </div>
+    <div class="product-card">
+      <img src="c:\Users\pramod\Downloads\pexels-beytlik-10793922.jpg" alt="Product 2" class="product-image"/>
+      <div class="product-info">
+        <div>
+          <h3 class="product-title">Product 2</h3>
+          <p class="product-price">$40</p>
+        </div>
+        <button class="add-to-cart">Add to Cart</button>
+      </div>
+    </div>
+    <div class="product-card">
+      <img src="https://via.placeholder.com/400x300?text=Product+3" alt="Product 3" class="product-image"/>
+      <div class="product-info">
+        <div>
+          <h3 class="product-title">Product 3</h3>
+          <p class="product-price">$30</p>
+        </div>
+        <button class="add-to-cart">Add to Cart</button>
+      </div>
+    </div>
+    <div class="product-card">
+      <img src="https://via.placeholder.com/400x300?text=Product+4" alt="Product 4" class="product-image"/>
+      <div class="product-info">
+        <div>
+          <h3 class="product-title">Product 4</h3>
+          <p class="product-price">$55</p>
+        </div>
+        <button class="add-to-cart">Add to Cart</button>
+      </div>
+    </div>
+    <div class="product-card">
+      <img src="https://via.placeholder.com/400x300?text=Product+5" alt="Product 5" class="product-image"/>
+      <div class="product-info">
+        <div>
+          <h3 class="product-title">Product 5</h3>
+          <p class="product-price">$20</p>
+        </div>
+        <button class="add-to-cart">Add to Cart</button>
+      </div>
+    </div>
+    <div class="product-card">
+      <img src="https://via.placeholder.com/400x300?text=Product+6" alt="Product 6" class="product-image"/>
+      <div class="product-info">
+        <div>
+          <h3 class="product-title">Product 6</h3>
+          <p class="product-price">$35</p>
+        </div>
+        <button class="add-to-cart">Add to Cart</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <span class="modal-close" id="modal-close">&times;</span>
+    <img src="" alt="Product Image" id="modal-image" class="w-full h-64 object-cover rounded mb-4"/>
+    <h2 class="font-bold text-xl mb-2" id="modal-title"></h2>
+    <p class="text-blue-600 font-bold text-lg mb-4" id="modal-price"></p>
+    <p id="modal-description" class="mb-4"></p>
+    <button id="modal-add-to-cart" class="add-to-cart w-full">Add to Cart</button>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.body.style.opacity = '1';
+
+  // Service Worker
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
+
+  // Push Notifications
+  const pushBtn = document.getElementById('btn-enable-push');
+  if ('Notification' in window && Notification.permission === 'default') {
+    pushBtn.hidden = false;
+    pushBtn.addEventListener('click', async () => {
+      if(await Notification.requestPermission() === 'granted') pushBtn.hidden = true;
+    });
+  }
+
+  // Offline banner
+  const offlineBanner = document.getElementById('offline-banner');
+  function updateOnlineStatus(){ offlineBanner.style.display = navigator.onLine?'none':'block'; }
+  window.addEventListener('online', updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+  updateOnlineStatus();
+
+  // Cart
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const cartCount = document.getElementById('cart-count');
+  const updateCartCounter = () => { cartCount.textContent = cart.length; };
+  updateCartCounter();
+
+  // Modal
+  const modalBg = document.getElementById('modal-bg');
+  const modalClose = document.getElementById('modal-close');
+  const modalAddBtn = document.getElementById('modal-add-to-cart');
+
+  const productCards = document.querySelectorAll('.product-card');
+  productCards.forEach((card, index) => {
+    const product = {
+      title: card.querySelector('.product-title').textContent,
+      price: card.querySelector('.product-price').textContent,
+      image: card.querySelector('.product-image').src,
+      description: `Description of ${card.querySelector('.product-title').textContent}`
+    };
+
+    function addToCart(){ cart.push(product); localStorage.setItem('cart', JSON.stringify(cart)); updateCartCounter(); alert(`${product.title} added to cart!`); }
+    function openModal(){ document.getElementById('modal-image').src = product.image; document.getElementById('modal-title').textContent = product.title; document.getElementById('modal-price').textContent = product.price; document.getElementById('modal-description').textContent = product.description; modalBg.style.display = 'flex'; modalAddBtn.onclick = addToCart; }
+
+    card.querySelector('.product-image').addEventListener('click', openModal);
+    card.querySelector('.product-title').addEventListener('click', openModal);
+    card.querySelector('.add-to-cart').addEventListener('click', addToCart);
+  });
+
+  modalClose.addEventListener('click', () => modalBg.style.display = 'none');
+  modalBg.addEventListener('click', e => { if(e.target === modalBg) modalBg.style.display = 'none'; });
+});
+</script>
+</body>
+</html>
